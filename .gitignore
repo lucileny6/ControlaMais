@@ -1,0 +1,42 @@
+# Arquivos de ajuda gerados pelo Spring Boot
+HELP.md
+
+# Saída de build do Maven (não versionar)
+target/
+
+# Arquivo do Maven Wrapper (pode ser regenerado)
+.mvn/wrapper/maven-wrapper.jar
+
+# Exceção: caso haja target dentro de src/main ou src/test, não ignorar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# === Eclipse / STS ===
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+# === IntelliJ IDEA ===
+.idea
+*.iws
+*.iml
+*.ipr
+
+# === NetBeans ===
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+
+# Exceções para build dentro de src
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# === VS Code ===
+.vscode/
