@@ -1,24 +1,69 @@
-package com.controla.backend.model;
+package com.controla.backend.service;
 
+import com.controla.backend.entity.User;
+import com.controla.backend.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import java.util.Optional;
 
-@Entity
-public class User {
+@Service
+public class UserService {
 
-    @Id
-    private String username;
-    private String password;
-    private boolean enabled;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    // Getters e Setters
-    public String getUsername() { return username; }
-    public void setUsername(String username) { this.username = username; }
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
+    // 🔹 Cadastro de usuário
+    public User registrarUser(User user) {
+        // Verifica se o usuário já existe
+        Optional<User> existente = findByEmail(user.getEmail());
+        if (existente.isPresent()) {
+            System.out.println("⚠️ Usuário já existe: " + user.getEmail());
+            return existente.get();
+        }
 
-    public boolean isEnabled() { return enabled; }
-    public void setEnabled(boolean enabled) { this.enabled = enabled; }
+        // Criptografa a senha e habilita o usuário
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setEnabled(true);
+
+        // Salva no banco
+        User savedUser = userRepository.save(user);
+        System.out.println("✅ Usuário cadastrado: " + savedUser.getEmail());
+        return savedUser;
+    }
+
+    // 🔹 Validação de login
+    public boolean validateLogin(String email, String rawPassword) {
+        Optional<User> userOpt = findByEmail(email);
+
+        if (userOpt.isEmpty()) {
+            System.out.println("❌ Usuário não encontrado: " + email);
+            return false;
+        }
+
+        User user = userOpt.get();
+
+        if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
+            System.out.println("❌ Senha incorreta para o e-mail: " + email);
+            return false;
+        }
+
+        if (!user.isEnabled()) {
+            System.out.println("⚠️ Usuário desativado: " + email);
+            return false;
+        }
+
+        System.out.println("✅ Login validado com sucesso: " + email);
+        return true;
+    }
+
+    // 🔹 Busca por e-mail
+    public Optional<User> findByEmail(String email) {
+        return Optional.ofNullable(userRepository.findByEmail(email));
+    }
 }

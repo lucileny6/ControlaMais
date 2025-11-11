@@ -1,7 +1,10 @@
 package com.controla.backend.repository;
 
-import com.controla.backend.model.User;
+import com.controla.backend.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface UserRepository extends JpaRepository<User, String> {
+@Repository
+public interface UserRepository extends JpaRepository<User, Long> {
+    User findByEmail(String email);
 }
