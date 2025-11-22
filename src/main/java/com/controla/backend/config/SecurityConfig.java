@@ -29,7 +29,7 @@ public class SecurityConfig {
 
                 // Configura permissões de rota
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/users/login", "/api/users/register").permitAll() // rotas públicas
+                        .requestMatchers("/api/users/login", "/api/users/register", "/api/users/test").permitAll() // rotas públicas
                         .anyRequest().authenticated() // todas as outras exigem autenticação
                 )
 

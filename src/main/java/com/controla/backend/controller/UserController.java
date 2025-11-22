@@ -10,13 +10,20 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:8081")
+
+
 public class UserController {
 
     private final UserService userService;
 
     public UserController(UserService userService) {
         this.userService = userService;
+    }
+
+    @GetMapping("/test")
+    public String test() {
+        return "ok";
     }
 
     // 🔹 CADASTRO DE USUÁRIO
