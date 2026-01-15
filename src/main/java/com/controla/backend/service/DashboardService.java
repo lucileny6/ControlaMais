@@ -1,32 +1,62 @@
 package com.controla.backend.service;
 
 import com.controla.backend.dto.DashboardDTO;
+import com.controla.backend.repository.DespesaRepository;
+import com.controla.backend.repository.ReceitaRepository;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
+import java.math.BigDecimal;
+import java.util.Collections;
 
 @Service
 public class DashboardService {
 
-    public DashboardDTO getDashboard() {
-        return new DashboardDTO(
-                9999.0,   // saldoTotal
-                8888.0,   // totalReceitas
-                777.0,    // totalDespesas
-                5000.0,   // meta
-                2500.0,    // poupanca
-                Arrays.asList(
-                        "Salário R$8888",
-                        "Supermercado R$777",
-                        "Conta de luz R$500"
-                ), // transações recentes
-                Arrays.asList(
-                        "Adicionar Receita",
-                        "Adicionar Despesa",
-                        "Conversar com IA",
-                        "Ver Relatórios"
-                ) // ações rápidas
-        );
+    private final ReceitaRepository receitaRepository;
+    private final DespesaRepository despesaRepository;
+
+    public DashboardService(ReceitaRepository receitaRepository,
+                            DespesaRepository despesaRepository) {
+        this.receitaRepository = receitaRepository;
+        this.despesaRepository = despesaRepository;
     }
+
+        public DashboardDTO getDashboard() {
+
+            // 1. Descobrir quem é o usuário logado
+            String emailUsuarioLogado =
+                    SecurityContextHolder.getContext().getAuthentication().getName();
+
+            // 2. Buscar a soma das despesas no banco
+            BigDecimal totalReceitas = receitaRepository.somarReceitasPorUsuario(emailUsuarioLogado);
+
+            //3. Buscar a soma das despesas no banco
+            BigDecimal totalDespesas = despesaRepository.somarDespesasPorUsuario(emailUsuarioLogado);
+
+            // 4. Tratar null (quando não existe nenhuma receita ou despesa)
+            if (totalReceitas == null) {
+                totalReceitas = BigDecimal.ZERO;
+            }
+            if (totalDespesas == null) {
+                totalDespesas = BigDecimal.ZERO;
+            }
+            // 5. Calcular o saldo
+            BigDecimal saldo = totalReceitas.subtract(totalDespesas);
+
+            // 6. Montar o DTO do Dashboard
+            return new DashboardDTO(
+                    saldo,
+                    totalReceitas,
+                    totalDespesas,
+                    BigDecimal.ZERO,          // meta (por enquanto)
+                    BigDecimal.ZERO,          // poupanca (por enquanto)
+                    Collections.emptyList(),  // transações recentes (depois)
+                    Collections.emptyList()   // ações rápidas (depois)
+            );
+        }
 }
+
+
+
+
 
