@@ -6,6 +6,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Repository
 
@@ -13,4 +14,6 @@ import java.math.BigDecimal;
 public interface DespesaRepository extends JpaRepository <Despesa, Long>{
     @Query("SELECT SUM(r.valor) FROM Despesa r WHERE r.user.email = :email")
     BigDecimal somarDespesasPorUsuario(@Param("email") String email);
+    List<Despesa> findTop3ByUserEmailOrderByDataDesc(String email);
+
 }

@@ -7,12 +7,16 @@ import org.springframework.data.jpa.repository.Query;
 
 
 import java.math.BigDecimal;
+import java.util.List;
 
 
 @Repository
 public interface ReceitaRepository  extends JpaRepository<Receita, Long> {
     @Query("SELECT SUM(r.valor) FROM Receita r WHERE r.user.email = :email")
     BigDecimal somarReceitasPorUsuario(@Param("email") String email);
+
+    List<Receita> findTop3ByUserEmailOrderByDataDesc(String email);
+
 
 
 }
