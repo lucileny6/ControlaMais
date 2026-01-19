@@ -15,7 +15,8 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("*") // pode trocar pelo IP do front ex: "http://192.168.0.102:3000"
+                        .allowedOrigins("http://localhost:8081") // pode trocar pelo IP do front ex: "http://192.168.0.102:3000"
+                        .allowCredentials(true)
                         .allowedMethods("GET", "POST", "PUT", "DELETE")
                         .allowedHeaders("*");
             }
