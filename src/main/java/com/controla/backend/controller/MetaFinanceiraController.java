@@ -16,7 +16,7 @@ import org.springframework.http.HttpStatus;
 
 
 @RestController
-@RequestMapping ("/meta")
+@RequestMapping ("api/meta")
 
 public class MetaFinanceiraController{
     private final MetaFinanceiraService metaFinanceiraService;

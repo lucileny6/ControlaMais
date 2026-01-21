@@ -12,49 +12,53 @@ import java.util.List;
 
 @Service
 public class MetaFinanceiraService {
+
     private final MetaFinanceiraRepository metaFinanceiraRepository;
     private final UserRepository userRepository;
-    public MetaFinanceiraService(MetaFinanceiraRepository metaFinanceiraRepository, UserRepository userRepository) {
+
+    public MetaFinanceiraService(
+            MetaFinanceiraRepository metaFinanceiraRepository,
+            UserRepository userRepository
+    ) {
         this.metaFinanceiraRepository = metaFinanceiraRepository;
         this.userRepository = userRepository;
+    }
 
-
-
-        }
     public MetaFinanceira criarMeta(String nome, BigDecimal valorMeta) {
-        if (valorMeta == null || valorMeta.compareTo(BigDecimal.ZERO) <= 0) {
 
+        if (valorMeta == null || valorMeta.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("O valor da meta deve ser maior que zero.");
         }
-        if (nome == null || nome.trim().length() == 0) {
+
+        if (nome == null || nome.trim().isEmpty()) {
             throw new IllegalArgumentException("O nome da meta não pode ser vazio.");
         }
-        String emailUsuarioLogado = SecurityContextHolder.getContext().getAuthentication().getName();
-        User usuario = userRepository.findByEmail(emailUsuarioLogado);
-        if (usuario == null) {
-            throw new IllegalArgumentException("usário autenticado não encontrado");
-        }
+
+        String emailUsuarioLogado =
+                SecurityContextHolder.getContext().getAuthentication().getName();
+
+        User usuario = userRepository.findByEmail(emailUsuarioLogado)
+                .orElseThrow(() ->
+                        new IllegalArgumentException("Usuário autenticado não encontrado")
+                );
+
         List<MetaFinanceira> metasAtivas =
                 metaFinanceiraRepository.findByUserEmailAndAtivaTrue(emailUsuarioLogado);
 
-        // 4. Desativar metas antigas
+        // Desativar metas antigas
         for (MetaFinanceira meta : metasAtivas) {
             meta.setAtiva(false);
         }
 
         metaFinanceiraRepository.saveAll(metasAtivas);
 
-        // 5. Ativar a nova meta
+        // Criar nova meta
         MetaFinanceira novaMeta = new MetaFinanceira();
         novaMeta.setNome(nome);
         novaMeta.setValorMeta(valorMeta);
         novaMeta.setUser(usuario);
         novaMeta.setAtiva(true);
 
-        // 6. Salvar nova meta
         return metaFinanceiraRepository.save(novaMeta);
     }
-
-
-    }
-
+}

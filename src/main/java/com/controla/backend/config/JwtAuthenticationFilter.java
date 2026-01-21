@@ -7,6 +7,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,7 +27,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final UserDetailsService userDetailsService;
 
-    // 🔹 Injeção do serviço que sabe buscar usuários
     public JwtAuthenticationFilter(UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
     }
@@ -38,59 +38,65 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
-        // 🔹 1. Lê o header Authorization
-        String header = request.getHeader("Authorization");
+        // 1️⃣ Lê o header Authorization
+        String authHeader = request.getHeader("Authorization");
 
-        if (header == null || !header.startsWith("Bearer ")) {
+        // Se não tiver token, segue a requisição
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // 🔹 2. Extrai o token
-        String token = header.substring(7);
+        // 2️⃣ Extrai o token
+        String token = authHeader.substring(7);
 
         try {
-            // 🔹 3. Cria a chave
+            // 3️⃣ Cria a chave
             SecretKey key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
 
-            // 🔹 4. Valida e lê o token
+            // 4️⃣ Valida e lê o token
             Claims claims = Jwts.parser()
                     .verifyWith(key)
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
 
-            // 🔹 5. Subject = email
+            // 5️⃣ Pega o email do usuário (subject)
             String email = claims.getSubject();
 
-            // 🔹 6. Se ainda não estiver autenticado
+            // 6️⃣ Verifica se pode autenticar
             if (email != null &&
-                    SecurityContextHolder.getContext().getAuthentication() == null) {
+                    (SecurityContextHolder.getContext().getAuthentication() == null ||
+                            SecurityContextHolder.getContext().getAuthentication()
+                                    instanceof AnonymousAuthenticationToken)) {
 
-                // 🔹 7. Busca o usuário REAL no sistema
+                // 7️⃣ Busca o usuário no sistema
                 UserDetails userDetails =
                         userDetailsService.loadUserByUsername(email);
 
-                // 🔹 8. Cria autenticação válida para o Spring
-                UsernamePasswordAuthenticationToken auth =
+                // 8️⃣ Cria autenticação válida
+                UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
                                 userDetails,
                                 null,
                                 userDetails.getAuthorities()
                         );
 
-                auth.setDetails(
-                        new WebAuthenticationDetailsSource().buildDetails(request)
+                authentication.setDetails(
+                        new WebAuthenticationDetailsSource()
+                                .buildDetails(request)
                 );
 
-                // 🔹 9. Coloca no contexto de segurança
-                SecurityContextHolder.getContext().setAuthentication(auth);
+                // 9️⃣ Coloca no contexto de segurança
+                SecurityContextHolder.getContext()
+                        .setAuthentication(authentication);
             }
 
         } catch (Exception e) {
             System.out.println("⚠️ Token inválido: " + e.getMessage());
         }
 
+        // 🔟 Continua a cadeia de filtros
         filterChain.doFilter(request, response);
     }
 }

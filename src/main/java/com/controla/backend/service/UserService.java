@@ -13,25 +13,24 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository,
+                       PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
     // 🔹 Cadastro de usuário
     public User registrarUser(User user) {
-        // Verifica se o usuário já existe
-        Optional<User> existente = findByEmail(user.getEmail());
+
+        Optional<User> existente = userRepository.findByEmail(user.getEmail());
         if (existente.isPresent()) {
             System.out.println("⚠️ Usuário já existe: " + user.getEmail());
             return existente.get();
         }
 
-        // Criptografa a senha e habilita o usuário
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setEnabled(true);
 
-        // Salva no banco
         User savedUser = userRepository.save(user);
         System.out.println("✅ Usuário cadastrado: " + savedUser.getEmail());
         return savedUser;
@@ -39,7 +38,8 @@ public class UserService {
 
     // 🔹 Validação de login
     public boolean validateLogin(String email, String rawPassword) {
-        Optional<User> userOpt = findByEmail(email);
+
+        Optional<User> userOpt = userRepository.findByEmail(email);
 
         if (userOpt.isEmpty()) {
             System.out.println("❌ Usuário não encontrado: " + email);
@@ -62,8 +62,8 @@ public class UserService {
         return true;
     }
 
-    // 🔹 Busca por e-mail
+    // 🔹 Busca por e-mail (delegação correta)
     public Optional<User> findByEmail(String email) {
-        return Optional.ofNullable(userRepository.findByEmail(email));
+        return userRepository.findByEmail(email);
     }
 }

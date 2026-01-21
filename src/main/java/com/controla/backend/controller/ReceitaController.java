@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @RestController
-@RequestMapping("/receita")
+@RequestMapping("/api/receitas")
 public class ReceitaController {
     private final ReceitaService receitaService;
 

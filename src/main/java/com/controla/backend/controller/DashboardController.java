@@ -8,7 +8,7 @@ import com.controla.backend.dto.DashboardDTO;
 import com.controla.backend.service.DashboardService;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/dashboard")
 public class DashboardController {
 
     private final DashboardService dashboardService;
@@ -17,7 +17,7 @@ public class DashboardController {
         this.dashboardService = dashboardService;
     }
 
-    @GetMapping("/dashboard")
+    @GetMapping
     public DashboardDTO getDashboard() {
         return dashboardService.getDashboard();
     }
