@@ -1,11 +1,13 @@
 package com.controla.backend.dto;
+import com.controla.backend.entity.TipoAcaoFinanceira;
 
-import jakarta.validation.constraints.NotNull;
+
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class AcaoFinanceiraDTO {
+
     private TipoAcaoFinanceira tipo;
     private LocalDate data;
     private BigDecimal valor;
@@ -79,9 +81,5 @@ public class AcaoFinanceiraDTO {
     public void setCategoria(String categoria) {
         this.categoria = categoria;
     }
-    public enum TipoAcaoFinanceira {
-        RECEITA,
-        DESPESA;
 
-    }
 }

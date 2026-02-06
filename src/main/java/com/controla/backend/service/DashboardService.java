@@ -1,11 +1,10 @@
 package com.controla.backend.service;
 
 import com.controla.backend.dto.DashboardDTO;
+import com.controla.backend.dto.DashboardTransactionDTO;
 import com.controla.backend.entity.Despesa;
-import com.controla.backend.entity.MetaFinanceira;
 import com.controla.backend.entity.Receita;
 import com.controla.backend.repository.DespesaRepository;
-import com.controla.backend.repository.MetaFinanceiraRepository;
 import com.controla.backend.repository.ReceitaRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -21,67 +20,84 @@ public class DashboardService {
     private final ReceitaRepository receitaRepository;
     private final DespesaRepository despesaRepository;
 
-
-    public DashboardService(ReceitaRepository receitaRepository,
-                            DespesaRepository despesaRepository) {
+    public DashboardService(
+            ReceitaRepository receitaRepository,
+            DespesaRepository despesaRepository
+    ) {
         this.receitaRepository = receitaRepository;
         this.despesaRepository = despesaRepository;
-
     }
 
     public DashboardDTO getDashboard() {
 
-        // 1. Descobrir quem é o usuário logado
-        String emailUsuarioLogado =
+        // 1Usuário logado
+        String emailUsuario =
                 SecurityContextHolder.getContext().getAuthentication().getName();
 
-        // 2. Buscar a soma das despesas no banco
-        BigDecimal totalReceitas = receitaRepository.somarReceitasPorUsuario(emailUsuarioLogado);
+        //  Totais
+        BigDecimal totalReceitas =
+                receitaRepository.somarReceitasPorUsuario(emailUsuario);
+        BigDecimal totalDespesas =
+                despesaRepository.somarDespesasPorUsuario(emailUsuario);
 
-        //3. Buscar a soma das despesas no banco
-        BigDecimal totalDespesas = despesaRepository.somarDespesasPorUsuario(emailUsuarioLogado);
+        if (totalReceitas == null) totalReceitas = BigDecimal.ZERO;
+        if (totalDespesas == null) totalDespesas = BigDecimal.ZERO;
 
-        // 4. Tratar null (quando não existe nenhuma receita ou despesa)
-        if (totalReceitas == null) {
-            totalReceitas = BigDecimal.ZERO;
-        }
-        if (totalDespesas == null) {
-            totalDespesas = BigDecimal.ZERO;
-        }
-        // 5. Calcular o saldo
         BigDecimal saldo = totalReceitas.subtract(totalDespesas);
 
-        //6.Resceitas recentes
+        // Buscar receitas e despesas recentes
         List<Receita> receitasRecentes =
-                receitaRepository.findTop3ByUserEmailOrderByDataDesc(emailUsuarioLogado);
-        List<String> transacoesRecentes = new ArrayList<>();
+                receitaRepository.findTop3ByUserEmailOrderByDataDesc(emailUsuario);
+
+        List<Despesa> despesasRecentes =
+                despesaRepository.findTop3ByUserEmailOrderByDataDesc(emailUsuario);
+
+        //  Montar transações recentes
+        List<DashboardTransactionDTO> transacoesRecentes = new ArrayList<>();
+
         for (Receita r : receitasRecentes) {
             transacoesRecentes.add(
-                    "+ " + r.getDescricao() + " R$ " + r.getValor()
+                    new DashboardTransactionDTO(
+                            r.getId(),
+                            r.getDescricao(),
+                            r.getCategoria(),
+                            "income",
+                            r.getValor(),
+                            r.getData()
+                    )
             );
         }
-            List<Despesa> despesasRecentes = despesaRepository.findTop3ByUserEmailOrderByDataDesc(emailUsuarioLogado);
-            for (Despesa despesa : despesasRecentes) {
-                transacoesRecentes.add(
-                        "- " + despesa.getDescricao() + " R$ " + despesa.getValor()
-                );
-            }
 
-
-
-            // 7. Montar o DTO do Dashboard
-            return new DashboardDTO(
-                    saldo,
-                    totalReceitas,
-                    totalDespesas,
-                    transacoesRecentes,  // transações recentes (depois)
-                    Collections.emptyList()   // ações rápidas (depois)
+        for (Despesa d : despesasRecentes) {
+            transacoesRecentes.add(
+                    new DashboardTransactionDTO(
+                            d.getId(),
+                            d.getDescricao(),
+                            d.getCategoria(),
+                            "expense",
+                            d.getValor(),
+                            d.getData()
+                    )
             );
         }
-   }
 
+        //  Ordenar por data (mais recente primeiro)
+        transacoesRecentes.sort(
+                (a, b) -> b.getData().compareTo(a.getData())
+        );
 
+        //  Limitar a 5 registros
+        if (transacoesRecentes.size() > 5) {
+            transacoesRecentes = transacoesRecentes.subList(0, 5);
+        }
 
-
-
-
+        //  Retornar DTO final
+        return new DashboardDTO(
+                saldo,
+                totalReceitas,
+                totalDespesas,
+                transacoesRecentes,
+                Collections.emptyList()
+        );
+    }
+}
