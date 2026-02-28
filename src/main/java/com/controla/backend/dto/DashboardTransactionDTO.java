@@ -35,3 +35,4 @@ public class DashboardTransactionDTO {
     public BigDecimal getValor() { return valor; }
     public LocalDate getData() { return data; }
 }
+

@@ -5,7 +5,12 @@ import com.controla.backend.dto.ChatIARequestDTO;
 import com.controla.backend.dto.ChatIAResponseDTO;
 import com.controla.backend.entity.AcaoFinanceira;
 import com.controla.backend.entity.TipoAcaoFinanceira;
+import com.controla.backend.entity.User;
 import com.controla.backend.repository.AcaoFinanceiraRepository;
+import com.controla.backend.repository.UserRepository;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -17,41 +22,42 @@ import java.util.regex.Pattern;
 public class ChatIAService {
 
     private final AcaoFinanceiraRepository acaoFinanceiraRepository;
+    private final UserRepository userRepository;
 
-    // ação pendente (memória temporária do chat)
+    //  memória temporária do chat
     private AcaoFinanceiraDTO acaoPendente;
 
-    public ChatIAService(AcaoFinanceiraRepository acaoFinanceiraRepository) {
+    public ChatIAService(
+            AcaoFinanceiraRepository acaoFinanceiraRepository,
+            UserRepository userRepository
+    ) {
         this.acaoFinanceiraRepository = acaoFinanceiraRepository;
+        this.userRepository = userRepository;
     }
 
     public ChatIAResponseDTO processarMensagem(ChatIARequestDTO request) {
 
         String mensagem = request.getMensagem().toLowerCase();
 
-        // 1️⃣ Se existe ação pendente → tratar confirmação
+
         if (acaoPendente != null) {
             return processarConfirmacao(mensagem);
         }
 
-        // 2️⃣ DESPESA
+
         if (ehDespesa(mensagem)) {
             return iniciarAcao(TipoAcaoFinanceira.DESPESA, mensagem);
         }
 
-        // 3️⃣ RECEITA
+
         if (ehReceita(mensagem)) {
             return iniciarAcao(TipoAcaoFinanceira.RECEITA, mensagem);
         }
 
-        return respostaTexto(
-                "Posso te ajudar a registrar receitas ou despesas 😊"
-        );
+        return respostaTexto("Posso te ajudar a registrar receitas ou despesas 😊");
     }
 
-    // =========================
-    // INICIAR AÇÃO
-    // =========================
+
     private ChatIAResponseDTO iniciarAcao(
             TipoAcaoFinanceira tipo,
             String mensagem
@@ -59,9 +65,7 @@ public class ChatIAService {
         BigDecimal valor = extrairValor(mensagem);
 
         if (valor == null) {
-            return respostaTexto(
-                    "Entendi a intenção, mas não identifiquei o valor. Pode informar?"
-            );
+            return respostaTexto("Não identifiquei o valor. Pode informar?");
         }
 
         acaoPendente = new AcaoFinanceiraDTO();
@@ -75,12 +79,21 @@ public class ChatIAService {
         return respostaConfirmacao(tipo, valor);
     }
 
-    // =========================
-    // CONFIRMAÇÃO
-    // =========================
+
     private ChatIAResponseDTO processarConfirmacao(String mensagem) {
 
+
         if (mensagem.contains("sim") || mensagem.contains("confirmar")) {
+
+            // 🔐 Usuário logado via JWT
+            Authentication auth = SecurityContextHolder
+                    .getContext()
+                    .getAuthentication();
+
+            String email = auth.getName();
+
+            User usuario = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
             AcaoFinanceira entity = new AcaoFinanceira();
             entity.setTipo(acaoPendente.getTipo());
@@ -88,6 +101,9 @@ public class ChatIAService {
             entity.setCategoria(acaoPendente.getCategoria());
             entity.setDescricao(acaoPendente.getDescricao());
             entity.setData(LocalDate.now());
+
+            // ⭐ ESSENCIAL
+            entity.setUsuario(usuario);
 
             acaoFinanceiraRepository.save(entity);
 
@@ -104,10 +120,7 @@ public class ChatIAService {
         return respostaTexto("Você confirma ou cancela?");
     }
 
-    // =========================
-    // REGRAS
-    // =========================
-    private boolean ehDespesa(String mensagem) {
+        private boolean ehDespesa(String mensagem) {
         return mensagem.contains("gastei")
                 || mensagem.contains("paguei")
                 || mensagem.contains("comprei");
@@ -119,19 +132,20 @@ public class ChatIAService {
                 || mensagem.contains("entrou");
     }
 
-    private BigDecimal extrairValor(String mensagem) {
+        private BigDecimal extrairValor(String mensagem) {
+
         Pattern pattern = Pattern.compile("(\\d+(?:[\\.,]\\d{1,2})?)");
         Matcher matcher = pattern.matcher(mensagem);
 
         if (matcher.find()) {
-            return new BigDecimal(matcher.group(1).replace(",", "."));
+            return new BigDecimal(
+                    matcher.group(1).replace(",", ".")
+            );
         }
+
         return null;
     }
 
-    // =========================
-    // RESPOSTAS
-    // =========================
     private ChatIAResponseDTO respostaTexto(String mensagem) {
         ChatIAResponseDTO response = new ChatIAResponseDTO();
         response.setTipo(ChatIAResponseDTO.ChatIAResponseType.TEXTO);

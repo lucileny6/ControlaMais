@@ -15,5 +15,6 @@ public interface DespesaRepository extends JpaRepository <Despesa, Long>{
     @Query("SELECT SUM(r.valor) FROM Despesa r WHERE r.user.email = :email")
     BigDecimal somarDespesasPorUsuario(@Param("email") String email);
     List<Despesa> findTop3ByUserEmailOrderByDataDesc(String email);
+    List<Despesa> findByUserEmailOrderByDataDesc(String email);
 
 }

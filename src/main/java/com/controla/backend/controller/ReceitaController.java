@@ -50,4 +50,24 @@ public class ReceitaController {
                 .body(response);
 
     }
+    @PutMapping("/{id}")
+    public ResponseEntity<ReceitaResponseDTO> atualizar(@PathVariable Long id, @RequestBody @Valid ReceitaRequestDTO dto)  {
+        Receita receitaAtualizada = receitaService.atualizarReceita(id, dto);
+
+        ReceitaResponseDTO response = new ReceitaResponseDTO(
+                receitaAtualizada.getId(),
+                receitaAtualizada.getValor(),
+                receitaAtualizada.getData(),
+                receitaAtualizada.getCategoria(),
+                receitaAtualizada.getDescricao(),
+                receitaAtualizada.getObservacao()
+        );
+            return ResponseEntity.ok(response);
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+        receitaService.deletarReceita(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }

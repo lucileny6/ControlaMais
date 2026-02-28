@@ -20,6 +20,19 @@ public class AcaoFinanceira {
     private String descricao;
     private LocalDate data;
 
+    @ManyToOne
+    @JoinColumn(name = "usuario_id")
+    private User usuario;
+
+    public User getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(User usuario) {
+        this.usuario = usuario;
+    }
+
+
     public Long getId() {
         return id;
     }

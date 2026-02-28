@@ -1,5 +1,4 @@
 package com.controla.backend.controller;
-
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -9,6 +8,8 @@ import com.controla.backend.service.DashboardService;
 
 @RestController
 @RequestMapping("/api/dashboard")
+
+
 public class DashboardController {
 
     private final DashboardService dashboardService;
@@ -22,3 +23,5 @@ public class DashboardController {
         return dashboardService.getDashboard();
     }
 }
+
+

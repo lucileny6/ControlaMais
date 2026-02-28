@@ -16,6 +16,7 @@ public interface ReceitaRepository  extends JpaRepository<Receita, Long> {
     BigDecimal somarReceitasPorUsuario(@Param("email") String email);
 
     List<Receita> findTop3ByUserEmailOrderByDataDesc(String email);
+    List<Receita> findByUserEmailOrderByDataDesc(String email);
 
 
 
