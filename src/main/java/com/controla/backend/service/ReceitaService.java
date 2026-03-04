@@ -25,9 +25,7 @@ public class ReceitaService {
         this.userRepository = userRepository;
     }
 
-    // =========================
-    // CADASTRAR
-    // =========================
+
     public Receita cadastrarReceita(Receita receita) {
 
         validarReceita(
@@ -43,9 +41,6 @@ public class ReceitaService {
         return receitaRepository.save(receita);
     }
 
-    // =========================
-    // ATUALIZAR
-    // =========================
     public Receita atualizarReceita(Long id, ReceitaRequestDTO dto) {
 
         Receita receita = receitaRepository.findById(id)
@@ -72,9 +67,7 @@ public class ReceitaService {
         return receitaRepository.save(receita);
     }
 
-    // =========================
-    // DELETAR
-    // =========================
+
     public void deletarReceita(Long id) {
 
         Receita receita = receitaRepository.findById(id)
@@ -89,9 +82,6 @@ public class ReceitaService {
         receitaRepository.delete(receita);
     }
 
-    // =========================
-    // MÉTODOS PRIVADOS AUXILIARES
-    // =========================
 
     private void validarReceita(BigDecimal valor, java.time.LocalDate data, String categoria) {
 

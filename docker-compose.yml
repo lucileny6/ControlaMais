@@ -1,0 +1,11 @@
+services:
+  mariadb:
+    image: mariadb:10
+    container_name: controla_mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: meubanco
+      MYSQL_USER: usuario
+      MYSQL_PASSWORD: senhauser
+    ports:
+      - "3306:3306"
