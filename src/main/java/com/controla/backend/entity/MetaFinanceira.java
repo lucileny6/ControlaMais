@@ -1,16 +1,22 @@
 package com.controla.backend.entity;
 
 import jakarta.persistence.*;
+
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Entity
 public class MetaFinanceira {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     private Long id;
 
     private String nome;
+
+    @Column(length = 500)
+    private String descricao;
+
+    private LocalDate prazo;
 
     @Column(nullable = false)
     private BigDecimal valorMeta;
@@ -23,7 +29,6 @@ public class MetaFinanceira {
     private User user;
 
     public MetaFinanceira() {
-
     }
 
     public long getId() {
@@ -40,6 +45,22 @@ public class MetaFinanceira {
 
     public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+
+    public LocalDate getPrazo() {
+        return prazo;
+    }
+
+    public void setPrazo(LocalDate prazo) {
+        this.prazo = prazo;
     }
 
     public BigDecimal getValorMeta() {

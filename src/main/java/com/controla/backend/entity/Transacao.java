@@ -15,6 +15,7 @@ public abstract class Transacao {
 
     @ManyToOne
     @JoinColumn (name = "user_id")
+
     private User user;
 
     private LocalDate data;

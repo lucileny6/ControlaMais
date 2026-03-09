@@ -18,6 +18,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.crypto.SecretKey;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -38,43 +39,33 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
-        // 1️⃣ Lê o header Authorization
         String authHeader = request.getHeader("Authorization");
 
-        // Se não tiver token, segue a requisição
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // 2️⃣ Extrai o token
         String token = authHeader.substring(7);
 
         try {
-            // 3️⃣ Cria a chave
-            SecretKey key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+            SecretKey key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
 
-            // 4️⃣ Valida e lê o token
             Claims claims = Jwts.parser()
                     .verifyWith(key)
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
 
-            // 5️⃣ Pega o email do usuário (subject)
             String email = claims.getSubject();
 
-            // 6️⃣ Verifica se pode autenticar
             if (email != null &&
                     (SecurityContextHolder.getContext().getAuthentication() == null ||
                             SecurityContextHolder.getContext().getAuthentication()
                                     instanceof AnonymousAuthenticationToken)) {
 
-                // 7️⃣ Busca o usuário no sistema
-                UserDetails userDetails =
-                        userDetailsService.loadUserByUsername(email);
+                UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
-                // 8️⃣ Cria autenticação válida
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
                                 userDetails,
@@ -83,20 +74,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         );
 
                 authentication.setDetails(
-                        new WebAuthenticationDetailsSource()
-                                .buildDetails(request)
+                        new WebAuthenticationDetailsSource().buildDetails(request)
                 );
 
-                // 9️⃣ Coloca no contexto de segurança
-                SecurityContextHolder.getContext()
-                        .setAuthentication(authentication);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
             }
 
         } catch (Exception e) {
-            System.out.println("⚠️ Token inválido: " + e.getMessage());
+            System.out.println("Token invalido: " + e.getMessage());
         }
 
-        // 🔟 Continua a cadeia de filtros
         filterChain.doFilter(request, response);
     }
 }

@@ -2,31 +2,35 @@ package com.controla.backend.config;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 public class JwtUtil {
 
     private static final String SECRET_KEY = "minhaChaveSuperSecreta1234567890minhaChaveSuperSecreta";
 
+    private static SecretKey getSigningKey() {
+        return Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
+    }
+
     public static String gerarToken(String email) {
-        SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(encodeKey()));
+        SecretKey key = getSigningKey();
 
         return Jwts.builder()
                 .subject(email)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
+                .expiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60))
                 .signWith(key)
                 .compact();
     }
 
     public static String extrairEmailDoToken(String token) {
-        SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(encodeKey()));
+        SecretKey key = getSigningKey();
 
-        Claims claims = Jwts.parser()       // ✅ versão correta para jjwt 0.12.6
+        Claims claims = Jwts.parser()
                 .verifyWith(key)
                 .build()
                 .parseSignedClaims(token)
@@ -42,9 +46,5 @@ public class JwtUtil {
         } catch (Exception e) {
             return false;
         }
-    }
-
-    private static String encodeKey() {
-        return java.util.Base64.getEncoder().encodeToString(SECRET_KEY.getBytes());
     }
 }
