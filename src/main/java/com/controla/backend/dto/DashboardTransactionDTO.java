@@ -11,6 +11,7 @@ public class DashboardTransactionDTO {
     private final String tipo; // income | expense
     private final BigDecimal valor;
     private final LocalDate data;
+    private final Boolean recorrente;
 
     public DashboardTransactionDTO(
             Long id,
@@ -18,7 +19,8 @@ public class DashboardTransactionDTO {
             String categoria,
             String tipo,
             BigDecimal valor,
-            LocalDate data
+            LocalDate data,
+            Boolean recorrente
     ) {
         this.id = id;
         this.descricao = descricao;
@@ -26,6 +28,7 @@ public class DashboardTransactionDTO {
         this.tipo = tipo;
         this.valor = valor;
         this.data = data;
+        this.recorrente = recorrente;
     }
 
     public Long getId() { return id; }
@@ -34,5 +37,7 @@ public class DashboardTransactionDTO {
     public String getTipo() { return tipo; }
     public BigDecimal getValor() { return valor; }
     public LocalDate getData() { return data; }
+    public Boolean getRecorrente() { return recorrente; }
 }
+
 

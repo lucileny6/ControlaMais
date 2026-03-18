@@ -1,6 +1,8 @@
 package com.controla.backend.dto;
 
 
+import com.controla.backend.entity.Receita;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -14,6 +16,7 @@ public class ReceitaResponseDTO {
     private String categoria;
     private String descricao;
     private String observacao;
+    private Boolean recorrente;
 
 
     public Long getId() {
@@ -24,13 +27,15 @@ public class ReceitaResponseDTO {
         return valor;
     }
 
-    public ReceitaResponseDTO (Long id, BigDecimal valor, LocalDate data, String categoria, String descricao, String observacao){
+    public ReceitaResponseDTO (Long id, BigDecimal valor, LocalDate data, String categoria, String descricao, String observacao, Boolean recorrente ) {
         this.id = id;
         this.valor = valor;
         this.data = data;
         this.categoria = categoria;
         this.descricao = descricao;
         this.observacao = observacao;
+        this.recorrente = recorrente;
+
 
 
 
@@ -51,5 +56,8 @@ public class ReceitaResponseDTO {
 
     public String getObservacao() {
         return observacao;
+    }
+    public Boolean getRecorrente() {
+        return recorrente;
     }
 }

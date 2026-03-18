@@ -17,6 +17,7 @@ private String observacao;
 
 @NotBlank
     private String categoria;
+    private Boolean recorrente;
 
     public LocalDate getData() {
         return data;
@@ -57,5 +58,10 @@ private String observacao;
     public void setCategoria(String categoria) {
         this.categoria = categoria;
     }
+
+    public Boolean getRecorrente() {return recorrente;}
+
+    public void setRecorrente(Boolean recorrente) {this.recorrente = recorrente;}
 }
+
 

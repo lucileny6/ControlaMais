@@ -29,6 +29,7 @@ public class DespesaController {
         despesa.setData(dto.getData());
         despesa.setObservacao(dto.getObservacao());
         despesa.setDescricao(dto.getDescricao());
+        despesa.setRecorrente(dto.getRecorrente());
 
         Despesa despesaSalva = despesaService.cadastrarDespesa(despesa);
 
@@ -38,7 +39,8 @@ public class DespesaController {
                 despesaSalva.getData(),
                 despesaSalva.getCategoria(),
                 despesaSalva.getDescricao(),
-                despesaSalva.getObservacao()
+                despesaSalva.getObservacao(),
+                despesaSalva.getRecorrente()
         );
 
         return ResponseEntity
@@ -61,7 +63,8 @@ public class DespesaController {
                 despesaAtualizada.getData(),
                 despesaAtualizada.getCategoria(),
                 despesaAtualizada.getDescricao(),
-                despesaAtualizada.getObservacao()
+                despesaAtualizada.getObservacao(),
+                despesaAtualizada.getRecorrente()
         );
 
         return ResponseEntity.ok(response);
@@ -75,3 +78,5 @@ public class DespesaController {
 
 
 }
+
+

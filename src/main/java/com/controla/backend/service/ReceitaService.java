@@ -32,6 +32,7 @@ public class ReceitaService {
                 receita.getValor(),
                 receita.getData(),
                 receita.getCategoria()
+
         );
 
         User usuarioLogado = buscarUsuarioLogado();
@@ -56,6 +57,7 @@ public class ReceitaService {
                 dto.getValor(),
                 dto.getData(),
                 dto.getCategoria()
+
         );
 
         receita.setValor(dto.getValor());
@@ -63,6 +65,7 @@ public class ReceitaService {
         receita.setCategoria(dto.getCategoria());
         receita.setDescricao(dto.getDescricao());
         receita.setObservacao(dto.getObservacao());
+        receita.setRecorrente(dto.getRecorrente());
 
         return receitaRepository.save(receita);
     }
@@ -109,3 +112,4 @@ public class ReceitaService {
                 );
     }
 }
+

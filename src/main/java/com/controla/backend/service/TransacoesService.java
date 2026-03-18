@@ -49,7 +49,8 @@ public class TransacoesService {
                     r.getCategoria(),
                     "income",
                     r.getValor(),
-                    r.getData()
+                    r.getData(),
+                    r.getRecorrente()
             ));
         }
 
@@ -62,7 +63,8 @@ public class TransacoesService {
                     d.getCategoria(),
                     "expense",
                     d.getValor(),
-                    d.getData()
+                    d.getData(),
+                    d.getRecorrente()
             ));
 
         }
@@ -78,7 +80,8 @@ public class TransacoesService {
                     a.getCategoria(),
                     tipo,
                     a.getValor(),
-                    a.getData()
+                    a.getData(),
+                    false
 
             ));
         }
@@ -153,3 +156,4 @@ public class TransacoesService {
     }
 
 }
+

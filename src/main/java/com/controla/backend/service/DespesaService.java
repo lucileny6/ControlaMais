@@ -67,6 +67,7 @@ public class DespesaService {
         despesa.setCategoria(dto.getCategoria());
         despesa.setDescricao(dto.getDescricao());
         despesa.setObservacao(dto.getObservacao());
+        despesa.setRecorrente(dto.getRecorrente());
 
         return despesaRepository.save(despesa);
     }

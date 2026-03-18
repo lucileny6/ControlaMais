@@ -24,6 +24,9 @@ public abstract class Transacao {
     private String observacao;
     private String categoria;
 
+    @Column(nullable = false)
+    private Boolean recorrente = false;
+
     protected Transacao() {
 
     }
@@ -69,5 +72,12 @@ public abstract class Transacao {
 
     public User getUser() {
         return user;
+    }
+    public Boolean getRecorrente() {
+        return recorrente;
+    }
+
+    public void setRecorrente(Boolean recorrente) {
+        this.recorrente = recorrente;
     }
 }

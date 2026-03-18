@@ -33,6 +33,7 @@ public class ReceitaController {
         receita.setObservacao(dto.getObservacao());
         receita.setCategoria(dto.getCategoria());
         receita.setDescricao(dto.getDescricao());
+        receita.setRecorrente(dto.getRecorrente());
 
         Receita receitaSalva = receitaService.cadastrarReceita(receita);
 
@@ -43,7 +44,8 @@ public class ReceitaController {
                 receitaSalva.getData(),
                 receitaSalva.getCategoria(),
                 receitaSalva.getDescricao(),
-                receitaSalva.getObservacao()
+                receitaSalva.getObservacao(),
+                receitaSalva.getRecorrente()
         );
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -60,7 +62,8 @@ public class ReceitaController {
                 receitaAtualizada.getData(),
                 receitaAtualizada.getCategoria(),
                 receitaAtualizada.getDescricao(),
-                receitaAtualizada.getObservacao()
+                receitaAtualizada.getObservacao(),
+                receitaAtualizada.getRecorrente()
         );
             return ResponseEntity.ok(response);
     }

@@ -108,7 +108,8 @@ public class DashboardService {
                     r.getCategoria(),
                     "income",
                     r.getValor(),
-                    r.getData()
+                    r.getData(),
+                    r.getRecorrente()
             ));
         }
 
@@ -120,7 +121,8 @@ public class DashboardService {
                     d.getCategoria(),
                     "expense",
                     d.getValor(),
-                    d.getData()
+                    d.getData(),
+                    d.getRecorrente()
             ));
         }
 
@@ -137,7 +139,8 @@ public class DashboardService {
                     a.getCategoria(),
                     tipo,
                     a.getValor(),
-                    a.getData()
+                    a.getData(),
+                    false
             ));
         }
 
@@ -157,3 +160,4 @@ public class DashboardService {
 
 
 }
+

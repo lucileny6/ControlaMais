@@ -16,12 +16,9 @@ public class ReceitaRequestDTO {
 
     @NotBlank
     private String categoria;
-
-
     private String descricao;
-
-
     private String observacao;
+    private Boolean recorrente;
 
     //Getter
 
@@ -56,4 +53,6 @@ public class ReceitaRequestDTO {
     public void setCategoria(String categoria) {
         this.categoria = categoria;
     }
+    public Boolean getRecorrente() {return recorrente;}
+    public void setRecorrente(Boolean recorrente) {this.recorrente = recorrente;}
 }
