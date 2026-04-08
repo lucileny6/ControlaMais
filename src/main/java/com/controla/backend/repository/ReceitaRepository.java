@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -14,6 +15,18 @@ import java.util.List;
 public interface ReceitaRepository  extends JpaRepository<Receita, Long> {
     @Query("SELECT SUM(r.valor) FROM Receita r WHERE r.user.email = :email")
     BigDecimal somarReceitasPorUsuario(@Param("email") String email);
+
+    @Query("""
+    SELECT COALESCE(SUM(r.valor), 0)
+    FROM Receita r
+    WHERE r.user.email = :email
+    AND r.data BETWEEN :dataInicial AND :dataFinal
+""")
+    BigDecimal somarReceitasPorUsuarioNoPeriodo(
+            @Param("email") String email,
+            @Param("dataInicial") LocalDate dataInicial,
+            @Param("dataFinal") LocalDate dataFinal
+    );
 
     List<Receita> findTop3ByUserEmailOrderByDataDesc(String email);
     List<Receita> findByUserEmailOrderByDataDesc(String email);

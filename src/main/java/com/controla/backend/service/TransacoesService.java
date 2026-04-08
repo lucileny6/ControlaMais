@@ -71,9 +71,7 @@ public class TransacoesService {
         List<AcaoFinanceira> acoe = acaoFinanceiraRepository
                 .findByUsuarioEmailOrderByDataDesc(emailUsuario);
         for (AcaoFinanceira a : acoe) {
-            String tipo = a.getTipo().name().equals("RECEITA")
-                    ? "icome"
-                    : "expense";
+            String tipo = "ia";
             lista.add(new DashboardTransactionDTO(
                     a.getId(),
                     a.getDescricao(),
@@ -95,19 +93,19 @@ public class TransacoesService {
         switch (tipo.toLowerCase()) {
 
             case "income":
-                receitaRepository.deleteById(id);
+                receitaRepository.findById(id).ifPresent(receitaRepository::delete);
                 break;
 
             case "expense":
-                despesaRepository.deleteById(id);
+                despesaRepository.findById(id).ifPresent(despesaRepository::delete);
                 break;
 
             case "ia":
-                acaoFinanceiraRepository.deleteById(id);
+                acaoFinanceiraRepository.findById(id).ifPresent(acaoFinanceiraRepository::delete);
                 break;
 
             default:
-                throw new RuntimeException("Tipo inválido: " + tipo);
+                throw new RuntimeException("Tipo invÃ¡lido: " + tipo);
         }
     }
     public void editarTransacao(Long id, String tipo, DashboardTransactionDTO dto) {
@@ -116,7 +114,7 @@ public class TransacoesService {
 
             case "income":
                 Receita receita = receitaRepository.findById(id)
-                        .orElseThrow(() -> new RuntimeException("Receita não encontrada"));
+                        .orElseThrow(() -> new RuntimeException("Receita nÃ£o encontrada"));
 
                 receita.setDescricao(dto.getDescricao());
                 receita.setCategoria(dto.getCategoria());
@@ -128,7 +126,7 @@ public class TransacoesService {
 
             case "expense":
                 Despesa despesa = despesaRepository.findById(id)
-                        .orElseThrow(() -> new RuntimeException("Despesa não encontrada"));
+                        .orElseThrow(() -> new RuntimeException("Despesa nÃ£o encontrada"));
 
                 despesa.setDescricao(dto.getDescricao());
                 despesa.setCategoria(dto.getCategoria());
@@ -140,7 +138,7 @@ public class TransacoesService {
 
             case "ia":
                 AcaoFinanceira acao = acaoFinanceiraRepository.findById(id)
-                        .orElseThrow(() -> new RuntimeException("Ação não encontrada"));
+                        .orElseThrow(() -> new RuntimeException("AÃ§Ã£o nÃ£o encontrada"));
 
                 acao.setDescricao(dto.getDescricao());
                 acao.setCategoria(dto.getCategoria());
@@ -151,9 +149,10 @@ public class TransacoesService {
                 break;
 
             default:
-                throw new RuntimeException("Tipo inválido: " + tipo);
+                throw new RuntimeException("Tipo invÃ¡lido: " + tipo);
         }
     }
 
 }
+
 

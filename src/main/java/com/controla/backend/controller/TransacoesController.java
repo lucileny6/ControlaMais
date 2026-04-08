@@ -5,6 +5,8 @@ import com.controla.backend.service.TransacoesService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -21,4 +23,8 @@ public class TransacoesController {
     public List<DashboardTransactionDTO> listar() {
        return transacoesService.listarTodasTransacoes();
    }
+    @DeleteMapping("/{id}/{tipo}")
+    public void deletar(@PathVariable Long id, @PathVariable String tipo) {
+        transacoesService.deletarTransacao(id, tipo);
+    }
 }

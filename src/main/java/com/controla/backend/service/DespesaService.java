@@ -25,9 +25,7 @@ public class DespesaService {
         this.userRepository = userRepository;
     }
 
-    // =========================
-    // CADASTRAR
-    // =========================
+
     public Despesa cadastrarDespesa(Despesa despesa) {
 
         validarDespesa(
@@ -48,12 +46,12 @@ public class DespesaService {
     public Despesa atualizarDespesa(Long id, DespesaRequestDTO dto) {
 
         Despesa despesa = despesaRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Despesa não encontrada."));
+                .orElseThrow(() -> new IllegalArgumentException("Despesa nÃ£o encontrada."));
 
         User usuarioLogado = buscarUsuarioLogado();
 
         if (!despesa.getUser().getId().equals(usuarioLogado.getId())) {
-            throw new SecurityException("Você não tem permissão para editar esta despesa.");
+            throw new SecurityException("VocÃª nÃ£o tem permissÃ£o para editar esta despesa.");
         }
 
         validarDespesa(
@@ -77,20 +75,19 @@ public class DespesaService {
     // =========================
     public void deletarDespesa(Long id) {
 
-        Despesa despesa = despesaRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Despesa não encontrada."));
-
         User usuarioLogado = buscarUsuarioLogado();
 
-        if (!despesa.getUser().getId().equals(usuarioLogado.getId())) {
-            throw new SecurityException("Você não tem permissão para excluir esta despesa.");
-        }
+        despesaRepository.findById(id).ifPresent(despesa -> {
+            if (!despesa.getUser().getId().equals(usuarioLogado.getId())) {
+                throw new SecurityException("VocÃª nÃ£o tem permissÃ£o para excluir esta despesa.");
+            }
 
-        despesaRepository.delete(despesa);
+            despesaRepository.delete(despesa);
+        });
     }
 
     // =========================
-    // MÉTODOS AUXILIARES
+    // MÃ‰TODOS AUXILIARES
     // =========================
 
     private void validarDespesa(BigDecimal valor, java.time.LocalDate data, String categoria) {
@@ -100,11 +97,11 @@ public class DespesaService {
         }
 
         if (data == null) {
-            throw new IllegalArgumentException("A data da despesa é obrigatória.");
+            throw new IllegalArgumentException("A data da despesa Ã© obrigatÃ³ria.");
         }
 
         if (categoria == null || categoria.isBlank()) {
-            throw new IllegalArgumentException("A categoria é obrigatória.");
+            throw new IllegalArgumentException("A categoria Ã© obrigatÃ³ria.");
         }
     }
 
@@ -115,7 +112,8 @@ public class DespesaService {
 
         return userRepository.findByEmail(emailUsuarioLogado)
                 .orElseThrow(() ->
-                        new IllegalArgumentException("Usuário autenticado não encontrado.")
+                        new IllegalArgumentException("UsuÃ¡rio autenticado nÃ£o encontrado.")
                 );
     }
 }
+

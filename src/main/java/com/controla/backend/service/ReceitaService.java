@@ -45,12 +45,12 @@ public class ReceitaService {
     public Receita atualizarReceita(Long id, ReceitaRequestDTO dto) {
 
         Receita receita = receitaRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Receita não encontrada."));
+                .orElseThrow(() -> new IllegalArgumentException("Receita nÃ£o encontrada."));
 
         User usuarioLogado = buscarUsuarioLogado();
 
         if (!receita.getUser().getId().equals(usuarioLogado.getId())) {
-            throw new SecurityException("Você não tem permissão para editar esta receita.");
+            throw new SecurityException("VocÃª nÃ£o tem permissÃ£o para editar esta receita.");
         }
 
         validarReceita(
@@ -73,16 +73,15 @@ public class ReceitaService {
 
     public void deletarReceita(Long id) {
 
-        Receita receita = receitaRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Receita não encontrada."));
-
         User usuarioLogado = buscarUsuarioLogado();
 
-        if (!receita.getUser().getId().equals(usuarioLogado.getId())) {
-            throw new SecurityException("Você não tem permissão para excluir esta receita.");
-        }
+        receitaRepository.findById(id).ifPresent(receita -> {
+            if (!receita.getUser().getId().equals(usuarioLogado.getId())) {
+                throw new SecurityException("VocÃª nÃ£o tem permissÃ£o para excluir esta receita.");
+            }
 
-        receitaRepository.delete(receita);
+            receitaRepository.delete(receita);
+        });
     }
 
 
@@ -93,11 +92,11 @@ public class ReceitaService {
         }
 
         if (data == null) {
-            throw new IllegalArgumentException("A data da receita é obrigatória.");
+            throw new IllegalArgumentException("A data da receita Ã© obrigatÃ³ria.");
         }
 
         if (categoria == null || categoria.isBlank()) {
-            throw new IllegalArgumentException("A categoria é obrigatória.");
+            throw new IllegalArgumentException("A categoria Ã© obrigatÃ³ria.");
         }
     }
 
@@ -108,8 +107,9 @@ public class ReceitaService {
 
         return userRepository.findByEmail(emailUsuarioLogado)
                 .orElseThrow(() ->
-                        new IllegalArgumentException("Usuário autenticado não encontrado.")
+                        new IllegalArgumentException("UsuÃ¡rio autenticado nÃ£o encontrado.")
                 );
     }
 }
+
 

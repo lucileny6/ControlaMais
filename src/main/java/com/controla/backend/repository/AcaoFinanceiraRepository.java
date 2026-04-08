@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 public interface AcaoFinanceiraRepository extends JpaRepository<AcaoFinanceira, Long> {
@@ -19,6 +20,20 @@ public interface AcaoFinanceiraRepository extends JpaRepository<AcaoFinanceira, 
     BigDecimal somarPorTipo(
             @Param("email") String email,
             @Param("tipo") TipoAcaoFinanceira tipo
+    );
+
+    @Query("""
+    SELECT COALESCE(SUM(a.valor), 0)
+    FROM AcaoFinanceira a
+    WHERE a.usuario.email = :email
+    AND a.tipo = :tipo
+    AND a.data BETWEEN :dataInicial AND :dataFinal
+""")
+    BigDecimal somarPorTipoNoPeriodo(
+            @Param("email") String email,
+            @Param("tipo") TipoAcaoFinanceira tipo,
+            @Param("dataInicial") LocalDate dataInicial,
+            @Param("dataFinal") LocalDate dataFinal
     );
 
     List<AcaoFinanceira> findTop3ByUsuarioEmailOrderByDataDesc(String email);

@@ -8,6 +8,7 @@ import java.time.LocalDate;
 
 public class AcaoFinanceiraDTO {
 
+    private String acao;
     private TipoAcaoFinanceira tipo;
     private LocalDate data;
     private BigDecimal valor;
@@ -28,10 +29,19 @@ public class AcaoFinanceiraDTO {
     String categoria){
 
         this.tipo = tipo;
-        this.data = LocalDate.now();
+        this.data = data;
         this.valor = valor;
         this.descricao = descricao;
         this.observacao = observacao;
+        this.categoria = categoria;
+    }
+
+    public String getAcao() {
+        return acao;
+    }
+
+    public void setAcao(String acao) {
+        this.acao = acao;
     }
 
     public TipoAcaoFinanceira getTipo() {
