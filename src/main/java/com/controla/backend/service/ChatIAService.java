@@ -1,5 +1,6 @@
 package com.controla.backend.service;
 
+import com.controla.backend.config.OpenAIConfig;
 import com.controla.backend.dto.AcaoFinanceiraDTO;
 import com.controla.backend.dto.ChatIARequestDTO;
 import com.controla.backend.dto.ChatIAResponseDTO;
@@ -38,7 +39,7 @@ public class ChatIAService {
     private final UserRepository userRepository;
     private final OpenAIService openAIService;
     private final DashboardService dashboardService;
-
+    private final OpenAIConfig openAIConfig;
 
     private final Map<String, AcaoFinanceiraDTO> memoria = new ConcurrentHashMap<>();
 
@@ -47,13 +48,15 @@ public class ChatIAService {
             DespesaRepository despesaRepository,
             UserRepository userRepository,
             OpenAIService openAIService,
-            DashboardService dashboardservice
+            DashboardService dashboardservice,
+            OpenAIConfig openAIConfig
     ) {
         this.receitaRepository = receitaRepository;
         this.despesaRepository = despesaRepository;
         this.userRepository = userRepository;
         this.openAIService = openAIService;
         this.dashboardService = dashboardservice;
+        this.openAIConfig = openAIConfig;
     }
 
     public ChatIAResponseDTO processarMensagem(ChatIARequestDTO request) {
@@ -78,7 +81,11 @@ public class ChatIAService {
             return respostaTexto("Olá! Posso registrar receitas, despesas ou consultar seu saldo 😊");
         }
 
-        // IA
+        // 🔥 BLOQUEIO DA OPENAI
+        if (!openAIConfig.isConfigured()) {
+            return respostaTexto("Funcionalidade de IA desativada (sem chave configurada)");
+        }
+        // chamada da ia//
         AcaoFinanceiraDTO acao = openAIService.interpretarMensagem(mensagem);
 
         if (acao == null || acao.getAcao() == null) {
