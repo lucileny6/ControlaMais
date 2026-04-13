@@ -1,30 +1,53 @@
-# Controla - Backend
+# Controla+ - Backend
 
 API REST para controle financeiro pessoal, desenvolvida com Spring Boot.
 
 ---
 
-##  Tecnologias
+## Tecnologias
 
-- Java 21+
-- Spring Boot
-- Spring Security (JWT)
-- JPA / Hibernate
-- MariaDB
-
----
-
-##  Como rodar o projeto
-
-###  Pré-requisitos
-
-- Java 21+
-- Maven
-- MariaDB rodando localmente
+* Java 21+
+* Spring Boot
+* Spring Security (JWT)
+* JPA / Hibernate
+* MariaDB
+* Docker / Docker Compose
 
 ---
 
-###  Configuração do banco
+## Como rodar o projeto
+
+### Pré-requisitos
+
+* Java 21+
+* Maven
+* Docker e Docker Compose
+
+---
+
+## Banco de Dados
+
+O banco de dados é executado via Docker Compose.
+
+### Subindo o banco
+
+Na raiz do projeto, execute:
+
+```bash
+docker-compose up -d
+```
+
+---
+
+### Parando o banco
+
+```bash
+docker-compose down
+```
+
+---
+
+## Configuração do banco
 
 Arquivo:
 
@@ -38,25 +61,25 @@ spring.datasource.username=usuario
 spring.datasource.password=senhauser
 ```
 
-> Essas credenciais são apenas para desenvolvimento local.
+> Os dados devem ser os mesmos definidos no docker-compose.yml
 
 ---
 
-###  Rodando o projeto
+## Rodando o projeto
 
 ```bash
- ./mvnw spring-boot:run
+./mvnw spring-boot:run
 ```
 
 ou
 
 ```bash
- mvn spring-boot:run
+mvn spring-boot:run
 ```
 
 ---
 
-### Acesso
+## Acesso
 
 http://localhost:8080
 
@@ -68,31 +91,31 @@ A API utiliza autenticação baseada em JWT.
 
 ### Rotas públicas
 
-- /api/users/login
-- /api/users/register
+* /api/users/login
+* /api/users/register
 
-###  Rotas protegidas
+### Rotas protegidas
 
-- Todas as rotas /api/** requerem token
-
----
-
-##  Testando a API
-
-Ferramentas recomendadas:
-
-- Postman
-- Insomnia
+* Todas as rotas /api/** requerem token JWT
 
 Header necessário:
 
 ```bash
- Authorization: Bearer SEU_TOKEN
+Authorization: Bearer SEU_TOKEN
 ```
 
 ---
 
-##  Integração com Frontend
+## Testando a API
+
+Ferramentas recomendadas:
+
+* Postman
+* Insomnia
+
+---
+
+## Integração com Frontend
 
 Frontend disponível em:
 
@@ -100,20 +123,20 @@ https://github.com/lucileny6/ControlaMais-Frontend
 
 ---
 
-##  Observações
+## Observações
 
-- Projeto em desenvolvimento
-- Configurações locais
-- Não utilizar credenciais em produção
+* Projeto em desenvolvimento
+* Uso local com Docker
+* Não utilizar credenciais em produção
 
 ---
 
-##  Autora
+## Autora
 
 Lucileny Xavier
 
 ---
 
-##  Objetivo
+## Objetivo
 
 Projeto criado para estudo e evolução em backend e APIs REST.
